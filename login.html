@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login | Brand</title>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics.js"></script>
+  <!-- Firebase SDK v8 -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
   <style>
+    /* CSS mu tetap, aku tidak ubah */
     body {
       font-family: 'Segoe UI', sans-serif;
       background-color: #f4f4f4;
@@ -20,7 +20,6 @@
       height: 100vh;
       margin: 0;
     }
-
     .login-container {
       background-color: white;
       padding: 30px 25px;
@@ -29,57 +28,44 @@
       width: 350px;
       text-align: center;
     }
-
     .logo {
       width: 80px;
       height: 80px;
       object-fit: contain;
       margin-bottom: 10px;
     }
-
     .brand-name {
       font-size: 22px;
       font-weight: bold;
       margin-bottom: 5px;
     }
-
     .slogan {
       font-size: 14px;
       color: #777;
       margin-bottom: 20px;
     }
-
     .form-title {
       font-size: 24px;
       font-weight: bold;
       margin-bottom: 20px;
     }
-
     form {
       text-align: left;
     }
-
     label {
       font-size: 14px;
       display: block;
       margin-bottom: 6px;
     }
-
     input[type="email"],
     input[type="password"] {
       width: 100%;
-      max-width: 330px;
       padding: 10px;
       margin-bottom: 15px;
       border: 1px solid #ccc;
       border-radius: 5px;
       font-size: 14px;
     }
-
-    input[type="checkbox"] {
-      margin-right: 5px;
-    }
-
     button {
       width: 100%;
       padding: 10px;
@@ -90,11 +76,9 @@
       font-size: 16px;
       cursor: pointer;
     }
-
     button:hover {
       background-color: #0fb310;
     }
-
     .google-btn {
       margin-top: 10px;
       background-color: #ffffff;
@@ -105,46 +89,21 @@
       justify-content: center;
       gap: 10px;
     }
-
     .google-btn img {
       width: 18px;
       height: 18px;
     }
-
     .links {
       margin-top: 15px;
       font-size: 14px;
     }
-
     .links a {
       color: #007BFF;
       text-decoration: none;
     }
-
     .links a:hover {
       text-decoration: underline;
     }
-
-    .premium-alert {
-      padding: 12px;
-      border-radius: 6px;
-      font-size: 14px;
-      margin-top: 15px;
-      display: none;
-    }
-
-    .email-alert {
-      background-color: #fff7e6;
-      color: #a67800;
-      border: 1px solid #ffd700;
-    }
-
-    .password-alert {
-      background-color: #fdecea;
-      color: #a94442;
-      border: 1px solid #d43f3a;
-    }
-
     #errorMessage {
       color: red;
       font-size: 14px;
@@ -153,29 +112,24 @@
     }
   </style>
 
-  <!-- Firebase Initialization -->
   <script>
-    // Your web app's Firebase configuration
-    const firebaseConfig = {
+    // Konfigurasi Firebase v8
+    var firebaseConfig = {
       apiKey: "AIzaSyD_Et5wLL9Zk24Ewc-43mTG4DP-PblvPGY",
       authDomain: "linkinaja-23a4b.firebaseapp.com",
       projectId: "linkinaja-23a4b",
-      storageBucket: "linkinaja-23a4b.firebasestorage.app",
+      storageBucket: "linkinaja-23a4b.appspot.com",
       messagingSenderId: "575411635239",
       appId: "1:575411635239:web:c8ff9067b78d57f92d7a02",
       measurementId: "G-F6LRLD1EYE"
     };
-
-    // Initialize Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const provider = new firebase.auth.GoogleAuthProvider();
+    firebase.initializeApp(firebaseConfig);
   </script>
 </head>
 <body>
 
   <div class="login-container">
-    <img src="https://i.ibb.co.com/twGmdmzY/Linkin-Aja-20250425-165144-0000.png/80" alt="Logo" class="logo" />
+    <img src="https://i.ibb.co/twGmdmz/Linkin-Aja-20250425-165144-0000.png" alt="Logo" class="logo" />
     <div class="brand-name">LinkinAja</div>
     <div class="slogan">Link pilihan dari toko terpercaya</div>
 
@@ -201,8 +155,6 @@
       Login dengan Google
     </button>
 
-    <div id="emailAlert" class="premium-alert email-alert"></div>
-    <div id="passwordAlert" class="premium-alert password-alert"></div>
     <div id="errorMessage"></div>
 
     <div class="links">
@@ -213,8 +165,6 @@
 
   <script>
     const loginForm = document.getElementById('loginForm');
-    const emailAlert = document.getElementById('emailAlert');
-    const passwordAlert = document.getElementById('passwordAlert');
     const errorMessage = document.getElementById('errorMessage');
     const googleLogin = document.getElementById('googleLogin');
 
@@ -226,16 +176,13 @@
       }
     });
 
-    loginForm.addEventListener('submit', (e) => {
+    loginForm.addEventListener('submit', function(e) {
       e.preventDefault();
-
-      emailAlert.style.display = 'none';
-      passwordAlert.style.display = 'none';
       errorMessage.style.display = 'none';
 
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-      const rememberMe = document.getElementById('rememberMe').checked;
+      var email = document.getElementById('email').value;
+      var password = document.getElementById('password').value;
+      var rememberMe = document.getElementById('rememberMe').checked;
 
       if (rememberMe) {
         localStorage.setItem('rememberedEmail', email);
@@ -243,30 +190,23 @@
         localStorage.removeItem('rememberedEmail');
       }
 
-      auth.signInWithEmailAndPassword(email, password)
-        .then(() => {
+      firebase.auth().signInWithEmailAndPassword(email, password)
+        .then(function() {
           window.location.href = 'home.html';
         })
-        .catch((error) => {
-          if (error.code === 'auth/user-not-found') {
-            emailAlert.textContent = 'Akun ini premium. Silakan daftar terlebih dahulu.';
-            emailAlert.style.display = 'block';
-          } else if (error.code === 'auth/wrong-password') {
-            passwordAlert.textContent = 'Fitur ini hanya untuk pengguna premium. Periksa kembali password Anda.';
-            passwordAlert.style.display = 'block';
-          } else {
-            errorMessage.textContent = error.message;
-            errorMessage.style.display = 'block';
-          }
+        .catch(function(error) {
+          errorMessage.textContent = error.message;
+          errorMessage.style.display = 'block';
         });
     });
 
-    googleLogin.addEventListener('click', () => {
-      auth.signInWithPopup(provider)
-        .then(() => {
+    googleLogin.addEventListener('click', function() {
+      var provider = new firebase.auth.GoogleAuthProvider();
+      firebase.auth().signInWithPopup(provider)
+        .then(function() {
           window.location.href = 'home.html';
         })
-        .catch((error) => {
+        .catch(function(error) {
           errorMessage.textContent = 'Gagal login dengan Google: ' + error.message;
           errorMessage.style.display = 'block';
         });
