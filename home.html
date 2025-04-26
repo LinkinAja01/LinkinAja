@@ -6,48 +6,21 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
     body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f4f4f4; }
-    header, footer { background-color: #0fb310; color: white; padding: 15px; text-align: center; }
-    nav { margin-top: 10px; }
-    nav a { margin: 0 10px; color: white; text-decoration: none; }
-    .hero { background-color: #e8f5e9; padding: 30px; text-align: center; }
-    .filters { padding: 15px; display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
-    .filters select, .filters input { padding: 8px; font-size: 14px; border-radius: 4px; border: 1px solid #ccc; }
-    .products {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
-      padding: 20px;
-    }
-    .product-card {
-      background-color: white;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      padding: 15px;
-      text-align: center;
-      transition: transform 0.3s;
-    }
-    .product-card:hover { transform: translateY(-5px); }
-    .product-card img { width: 100%; height: 150px; object-fit: contain; margin-bottom: 10px; }
-    .product-card .rating { color: gold; }
-    .product-card button {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      padding: 10px;
-      margin-top: 10px;
-      width: 100%;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-    footer { margin-top: 30px; }
-    .banner-img { width: 100%; height: auto; margin-top: 20px; }
-    .logo-img { width: 100px; height: auto; margin-bottom: 10px; }
-    @media (max-width: 600px) {
-      .products { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 400px) {
-      .products { grid-template-columns: 1fr; }
-    }
+    header, footer { background-color: #0fb310; color: white; padding: 10px 15px; text-align: center; }
+    nav { margin-top: 5px; font-size: 14px; }
+    nav a { margin: 0 8px; color: white; text-decoration: none; }
+    header img.logo-img { width: 80px; margin-bottom: 5px; }
+    .hero { background-color: #e8f5e9; padding: 20px; text-align: center; }
+    .filters { padding: 10px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .filters select, .filters input { padding: 6px; font-size: 13px; border-radius: 4px; border: 1px solid #ccc; }
+    .products { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; padding: 10px; }
+    .product-card { background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); padding: 10px; text-align: center; }
+    .product-card img { width: 100%; height: 100px; object-fit: contain; margin-bottom: 8px; }
+    .product-card .rating { color: gold; font-size: 14px; }
+    .product-card button { background-color: #4CAF50; color: white; border: none; padding: 8px; margin-top: 8px; width: 100%; cursor: pointer; border-radius: 4px; font-size: 13px; }
+    .banner-img { width: 100%; height: auto; margin: 10px 0; }
+    footer { font-size: 13px; }
+    #spinner { text-align:center; display:none; margin:20px; }
   </style>  <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
@@ -69,7 +42,7 @@
 
     let lastVisible = null;
     let loading = false;
-    const pageSize = 8;
+    const pageSize = 10;
 
     let filterToko = "";
     let filterKategori = "";
@@ -100,7 +73,6 @@
       filterToko = document.getElementById('filterToko').value;
       filterKategori = document.getElementById('filterKategori').value;
       searchKeyword = document.getElementById('searchInput').value.trim().toLowerCase();
-
       document.getElementById('productGrid').innerHTML = '';
       lastVisible = null;
       loadProducts();
@@ -117,7 +89,6 @@
     async function loadProducts() {
       if (loading) return;
       loading = true;
-
       const productGrid = document.getElementById("productGrid");
       const spinner = document.getElementById("spinner");
       spinner.style.display = "block";
@@ -129,27 +100,20 @@
       if (filterKategori) constraints.push(where("kategori", "==", filterKategori));
 
       let baseQuery = query(q, ...constraints, orderBy("nama"), limit(pageSize));
-      if (lastVisible) {
-        baseQuery = query(q, ...constraints, orderBy("nama"), startAfter(lastVisible), limit(pageSize));
-      }
+      if (lastVisible) baseQuery = query(q, ...constraints, orderBy("nama"), startAfter(lastVisible), limit(pageSize));
 
       const snapshot = await getDocs(baseQuery);
-
       if (!snapshot.empty) {
         lastVisible = snapshot.docs[snapshot.docs.length - 1];
-
         snapshot.forEach((doc) => {
           const p = doc.data();
-          if (searchKeyword && !p.nama.toLowerCase().includes(searchKeyword)) {
-            return;
-          }
-
+          if (searchKeyword && !p.nama.toLowerCase().includes(searchKeyword)) return;
           const div = document.createElement('div');
           div.className = 'product-card';
           div.innerHTML = `
             <img src="${p.gambar}" alt="${p.nama}" />
-            <h4>${p.nama}</h4>
-            <p>${p.deskripsi}</p>
+            <h4 style="font-size:14px; margin:4px 0;">${p.nama}</h4>
+            <p style="font-size:12px; color:gray;">${p.deskripsi}</p>
             <div class="rating">${'★'.repeat(p.rating)}${'☆'.repeat(5 - p.rating)}</div>
             <strong>Rp${p.harga.toLocaleString()}</strong>
             <button onclick="window.open('${p.link}', '_blank')">Beli Sekarang</button>
@@ -163,15 +127,15 @@
     }
 
     function handleScroll() {
-      if ((window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 500)) {
+      if ((window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 300)) {
         loadProducts();
       }
     }
-  </script></head><body>
+  </script></head>
+<body>
   <header>
     <img src="https://i.ibb.co.com/XfVXQmfm/1-20250423-195927-0000.png" alt="Logo LinkinAja" class="logo-img" />
-    <h1>LinkinAja</h1>
-    <p>Link pilihan dari toko terpercaya</p>
+    <h1 style="font-size:18px; margin:5px 0;">LinkinAja</h1>
     <nav>
       <a href="home.html">Home</a>
       <a href="tentang.html">Tentang Kami</a>
@@ -205,7 +169,7 @@
       <option value="Peralatan Rumah Tangga">Peralatan Rumah Tangga</option>
     </select>
     <input type="text" id="searchInput" placeholder="Cari produk...">
-  </section>  <section class="products" id="productGrid"></section>  <div id="spinner" style="text-align:center; display:none; margin:20px;">
+  </section>  <section class="products" id="productGrid"></section>  <div id="spinner">
     <i class="fas fa-spinner fa-spin fa-2x" style="color: #4CAF50;"></i>
   </div>  <img src="https://i.ibb.co.com/23rMtHvj/Putih-Biru-Modern-Geometris-Iklan-Promosi-Perusahaan-Spanduk-Horizontal-20250426-015529-0000.png" alt="Banner Iklan 2" class="banner-img" />  <footer>
     <p>&copy; 2025 LinkinAja. Hak cipta dilindungi.</p>
