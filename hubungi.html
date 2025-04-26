@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hubungi Kami | LinkinAja</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: #f4f4f4;
+      position: relative;
+    }
+    header, footer {
+      background-color: #0fb310;
+      color: white;
+      padding: 15px;
+      text-align: center;
+      position: relative;
+    }
+    .hero {
+      background-color: #e8f5e9;
+      padding: 30px;
+      text-align: center;
+    }
+    .contact-form {
+      padding: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    .contact-form input, .contact-form textarea {
+      width: 95%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .contact-form button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .contact-form button:hover {
+      background-color: #45a049;
+    }
+    .link-button {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background-color: #ffffff;
+      color: #0fb310;
+      padding: 6px 12px;
+      font-size: 12px;
+      border: 1px solid #0fb310;
+      border-radius: 5px;
+      text-decoration: none;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .link-button:hover {
+      background-color: #0fb310;
+      color: #ffffff;
+    }
+    footer {
+      margin-top: 30px;
+    }
+
+    /* Menyesuaikan ukuran logo kecil */
+    .logo-img {
+      width: 80px;
+      height: auto;
+    }
+
+    /* Responsiveness for mobile devices */
+    @media (max-width: 768px) {
+      .hero {
+        padding: 20px;
+      }
+      .contact-form {
+        padding: 15px;
+        margin: 10px;
+      }
+      .contact-form input, .contact-form textarea {
+        font-size: 14px;
+      }
+      .contact-form button {
+        width: 100%;
+      }
+    }
+    @media (max-width: 480px) {
+      header, footer {
+        padding: 10px;
+      }
+      .link-button {
+        top: 10px;
+        right: 10px;
+        font-size: 10px;
+        padding: 5px 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="home.html" class="link-button">Back Home</a>
+    <img src="https://i.ibb.co.com/XfVXQmfm/1-20250423-195927-0000.png" alt="Logo LinkinAja" class="logo-img" />
+    <h1>LinkinAja</h1>
+    <p>Link pilihan dari toko terpercaya</p>
+  </header>
+
+  <section class="hero">
+    <h2>Hubungi Kami</h2>
+    <p>Jika Anda memiliki pertanyaan atau butuh bantuan, silakan isi formulir di bawah ini.</p>
+  </section>
+
+  <section class="contact-form">
+    <form action="YOUR_SERVER_ENDPOINT" method="POST">
+      <label for="name">Nama Anda</label>
+      <input type="text" id="name" name="name" required placeholder="Masukkan nama Anda" />
+      
+      <label for="email">Email Anda</label>
+      <input type="email" id="email" name="email" required placeholder="Masukkan email Anda" />
+      
+      <label for="message">Pesan Anda</label>
+      <textarea id="message" name="message" required placeholder="Tulis pesan Anda" rows="4"></textarea>
+      
+      <button type="submit">Kirim Pesan</button>
+    </form>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 LinkinAja. Hak cipta dilindungi.</p>
+  </footer>
+</body>
+</html>
