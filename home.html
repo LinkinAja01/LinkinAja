@@ -6,21 +6,24 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
     body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f4f4f4; }
-    header, footer { background-color: #0fb310; color: white; padding: 10px 15px; text-align: center; }
-    nav { margin-top: 5px; font-size: 14px; }
-    nav a { margin: 0 8px; color: white; text-decoration: none; }
-    header img.logo-img { width: 80px; margin-bottom: 5px; }
-    .hero { background-color: #e8f5e9; padding: 20px; text-align: center; }
-    .filters { padding: 10px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-    .filters select, .filters input { padding: 6px; font-size: 13px; border-radius: 4px; border: 1px solid #ccc; }
-    .products { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; padding: 10px; }
-    .product-card { background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); padding: 10px; text-align: center; }
-    .product-card img { width: 100%; height: 100px; object-fit: contain; margin-bottom: 8px; }
-    .product-card .rating { color: gold; font-size: 14px; }
-    .product-card button { background-color: #4CAF50; color: white; border: none; padding: 8px; margin-top: 8px; width: 100%; cursor: pointer; border-radius: 4px; font-size: 13px; }
-    .banner-img { width: 100%; height: auto; margin: 10px 0; }
-    footer { font-size: 13px; }
-    #spinner { text-align:center; display:none; margin:20px; }
+    header, footer { background-color: #0fb310; color: white; padding: 10px; text-align: center; }
+    header img { height: 50px; }
+    nav { margin-top: 5px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+    nav a { color: white; text-decoration: none; font-size: 14px; }
+    .hero { background: #e8f5e9; padding: 20px; text-align: center; }
+    .filters { padding: 10px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+    .filters select, .filters input { padding: 8px; font-size: 14px; border-radius: 5px; border: 1px solid #ccc; min-width: 120px; }
+    .products { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; padding: 10px; }
+    .product-card { background: white; border-radius: 8px; box-shadow: 0 1px 5px rgba(0,0,0,0.1); padding: 10px; text-align: center; }
+    .product-card img { width: 100%; height: 100px; object-fit: contain; margin-bottom: 5px; }
+    .product-card h4 { font-size: 14px; margin: 5px 0; }
+    .product-card p { font-size: 12px; color: #666; height: 30px; overflow: hidden; }
+    .product-card .rating { font-size: 12px; color: gold; }
+    .product-card strong { display: block; margin-top: 5px; font-size: 13px; color: #0a7c0a; }
+    .product-card button { background: #4CAF50; color: white; border: none; padding: 8px; width: 100%; border-radius: 5px; font-size: 12px; margin-top: 5px; cursor: pointer; }
+    #spinner { text-align: center; margin: 20px; display: none; }
+    footer p { font-size: 12px; margin: 5px; }
+    .banner-img { width: 100%; margin-top: 10px; }
   </style>  <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
@@ -50,18 +53,42 @@
 
     const userCheck = () => {
       onAuthStateChanged(auth, (user) => {
-        if (!user) {
-          window.location.href = "login.html";
-        }
+        if (!user) window.location.href = "login.html";
       });
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('DOMContentLoaded', async () => {
       userCheck();
+      await populateFilters();
       setupFilterListeners();
       loadProducts();
       window.addEventListener('scroll', handleScroll);
     });
+
+    async function populateFilters() {
+      const snapshot = await getDocs(collection(db, "produk"));
+      const tokoSet = new Set();
+      const kategoriSet = new Set();
+
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        if (data.toko) tokoSet.add(data.toko);
+        if (data.kategori) kategoriSet.add(data.kategori);
+      });
+
+      const tokoSelect = document.getElementById('filterToko');
+      const kategoriSelect = document.getElementById('filterKategori');
+
+      tokoSelect.innerHTML = '<option value="">Semua Toko</option>';
+      kategoriSelect.innerHTML = '<option value="">Semua Kategori</option>';
+
+      tokoSet.forEach(toko => {
+        tokoSelect.innerHTML += `<option value="${toko}">${toko}</option>`;
+      });
+      kategoriSet.forEach(kat => {
+        kategoriSelect.innerHTML += `<option value="${kat}">${kat}</option>`;
+      });
+    }
 
     function setupFilterListeners() {
       document.getElementById('filterToko').addEventListener('change', resetAndLoad);
@@ -89,6 +116,7 @@
     async function loadProducts() {
       if (loading) return;
       loading = true;
+
       const productGrid = document.getElementById("productGrid");
       const spinner = document.getElementById("spinner");
       spinner.style.display = "block";
@@ -100,78 +128,59 @@
       if (filterKategori) constraints.push(where("kategori", "==", filterKategori));
 
       let baseQuery = query(q, ...constraints, orderBy("nama"), limit(pageSize));
-      if (lastVisible) baseQuery = query(q, ...constraints, orderBy("nama"), startAfter(lastVisible), limit(pageSize));
+      if (lastVisible) {
+        baseQuery = query(q, ...constraints, orderBy("nama"), startAfter(lastVisible), limit(pageSize));
+      }
 
       const snapshot = await getDocs(baseQuery);
       if (!snapshot.empty) {
         lastVisible = snapshot.docs[snapshot.docs.length - 1];
+
         snapshot.forEach((doc) => {
           const p = doc.data();
           if (searchKeyword && !p.nama.toLowerCase().includes(searchKeyword)) return;
+
           const div = document.createElement('div');
           div.className = 'product-card';
           div.innerHTML = `
             <img src="${p.gambar}" alt="${p.nama}" />
-            <h4 style="font-size:14px; margin:4px 0;">${p.nama}</h4>
-            <p style="font-size:12px; color:gray;">${p.deskripsi}</p>
-            <div class="rating">${'★'.repeat(p.rating)}${'☆'.repeat(5 - p.rating)}</div>
-            <strong>Rp${p.harga.toLocaleString()}</strong>
-            <button onclick="window.open('${p.link}', '_blank')">Beli Sekarang</button>
+            <h4>${p.nama}</h4>
+            <p>${p.deskripsi || ''}</p>
+            <div class="rating">${'★'.repeat(p.rating || 0)}${'☆'.repeat(5 - (p.rating || 0))}</div>
+            <strong>Rp${p.harga ? p.harga.toLocaleString() : '0'}</strong>
+            <button onclick="window.open('${p.link}', '_blank')">Beli</button>
           `;
           productGrid.appendChild(div);
         });
       }
-
       spinner.style.display = "none";
       loading = false;
     }
 
     function handleScroll() {
-      if ((window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 300)) {
+      if ((window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 500)) {
         loadProducts();
       }
     }
-  </script></head>
-<body>
+  </script></head><body>
   <header>
-    <img src="https://i.ibb.co.com/XfVXQmfm/1-20250423-195927-0000.png" alt="Logo LinkinAja" class="logo-img" />
-    <h1 style="font-size:18px; margin:5px 0;">LinkinAja</h1>
+    <img src="https://i.ibb.co.com/XfVXQmfm/1-20250423-195927-0000.png" alt="Logo LinkinAja" />
     <nav>
       <a href="home.html">Home</a>
-      <a href="tentang.html">Tentang Kami</a>
+      <a href="tentang.html">Tentang</a>
       <a href="kontak.html">Kontak</a>
       <a href="pengaturan.html">Pengaturan</a>
     </nav>
-  </header>  <img src="https://i.ibb.co.com/XrkWmRgn/Hijau-Banner-Iklan-Kiriman-Instagram-1636-x-736-piksel-20250426-012637-0000.png" alt="Banner Iklan" class="banner-img" />  <section class="hero">
-    <h2>Selamat datang di LinkinAja!</h2>
-    <p>Temukan produk terbaik dari berbagai toko online terpercaya.</p>
+  </header>  <img src="https://i.ibb.co.com/XrkWmRgn/Hijau-Banner-Iklan-Kiriman-Instagram-1636-x-736-piksel-20250426-012637-0000.png" alt="Banner" class="banner-img" />  <section class="hero">
+    <h2>Selamat Datang di LinkinAja!</h2>
+    <p>Temukan produk terbaik dari berbagai toko terpercaya.</p>
   </section>  <section class="filters">
-    <select id="filterToko">
-      <option value="">Semua Toko</option>
-      <option value="Shopee">Shopee</option>
-      <option value="Lazada">Lazada</option>
-      <option value="Tokopedia">Tokopedia</option>
-      <option value="Blibli">Blibli</option>
-      <option value="Bukalapak">Bukalapak</option>
-      <option value="Akulaku">Akulaku</option>
-      <option value="Alibaba">Alibaba</option>
-      <option value="TiktokShop">TiktokShop</option>
-    </select>
-    <select id="filterKategori">
-      <option value="">Semua Kategori</option>
-      <option value="Elektronik">Elektronik</option>
-      <option value="Gadget">Gadget</option>
-      <option value="Komputer">Komputer</option>
-      <option value="Fashion">Fashion</option>
-      <option value="Kesehatan">Kesehatan</option>
-      <option value="Kecantikan">Kecantikan</option>
-      <option value="Peralatan Bayi">Peralatan Bayi</option>
-      <option value="Peralatan Rumah Tangga">Peralatan Rumah Tangga</option>
-    </select>
+    <select id="filterToko"></select>
+    <select id="filterKategori"></select>
     <input type="text" id="searchInput" placeholder="Cari produk...">
   </section>  <section class="products" id="productGrid"></section>  <div id="spinner">
     <i class="fas fa-spinner fa-spin fa-2x" style="color: #4CAF50;"></i>
-  </div>  <img src="https://i.ibb.co.com/23rMtHvj/Putih-Biru-Modern-Geometris-Iklan-Promosi-Perusahaan-Spanduk-Horizontal-20250426-015529-0000.png" alt="Banner Iklan 2" class="banner-img" />  <footer>
+  </div>  <img src="https://i.ibb.co.com/23rMtHvj/Putih-Biru-Modern-Geometris-Iklan-Promosi-Perusahaan-Spanduk-Horizontal-20250426-015529-0000.png" alt="Banner2" class="banner-img" />  <footer>
     <p>&copy; 2025 LinkinAja. Hak cipta dilindungi.</p>
   </footer>
 </body>
