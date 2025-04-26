@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign Up | Brand</title>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .signup-container {
+      background-color: white;
+      padding: 30px 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      width: 400px;
+      text-align: center;
+    }
+
+    .logo {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      margin-bottom: 10px;
+    }
+
+    .brand-name {
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .slogan {
+      font-size: 14px;
+      color: #777;
+      margin-bottom: 20px;
+    }
+
+    .form-title {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    form {
+      text-align: left;
+    }
+
+    label {
+      font-size: 14px;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      width: 95%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #0fb310;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0fb310;
+    }
+
+    .google-btn {
+      margin-top: 15px;
+      background-color: #ffffff;
+      color: #444;
+      border: 1px solid #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .google-btn img {
+      width: 18px;
+      height: 18px;
+    }
+
+    .links {
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    .links a {
+      color: #007BFF;
+      text-decoration: none;
+    }
+
+    .links a:hover {
+      text-decoration: underline;
+    }
+
+    .alert-message {
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      margin-top: 15px;
+      display: none;
+      background-color: #fdecea;
+      color: #a94442;
+      border: 1px solid #d43f3a;
+    }
+
+    .terms {
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      margin-bottom: 15px;
+    }
+
+    .terms input {
+      margin-right: 8px;
+    }
+  </style>
+
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyD_Et5wLL9Zk24Ewc-43mTG4DP-PblvPGY",
+      authDomain: "linkinaja-23a4b.firebaseapp.com",
+      projectId: "linkinaja-23a4b",
+      storageBucket: "linkinaja-23a4b.firebasestorage.app",
+      messagingSenderId: "575411635239",
+      appId: "1:575411635239:web:c8ff9067b78d57f92d7a02",
+      measurementId: "G-F6LRLD1EYE"
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const provider = new firebase.auth.GoogleAuthProvider();
+  </script>
+</head>
+<body>
+
+  <div class="signup-container">
+    <img src="https://i.ibb.co.com/twGmdmzY/Linkin-Aja-20250425-165144-0000.png/80" alt="Logo" class="logo" />
+    <div class="brand-name">LinkinAja</div>
+    <div class="slogan">Link pilihan dari toko terpercaya</div>
+
+    <div class="form-title">Sign Up</div>
+
+    <form id="signupForm">
+      <label for="firstName">Nama Depan</label>
+      <input type="text" id="firstName" placeholder="Masukkan nama depan" required />
+
+      <label for="lastName">Nama Belakang</label>
+      <input type="text" id="lastName" placeholder="Masukkan nama belakang" required />
+
+      <label for="email">Email</label>
+      <input type="email" id="email" placeholder="Contoh: nama@email.com" required />
+
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="Minimal 6 karakter" required />
+
+      <label for="confirmPassword">Konfirmasi Password</label>
+      <input type="password" id="confirmPassword" placeholder="Ketik ulang password" required />
+
+      <div class="terms">
+        <input type="checkbox" id="terms" required />
+        <label for="terms">Saya menyetujui <a href="kebijakanprivasi.html">syarat & ketentuan</a></label>
+      </div>
+
+      <button type="submit">Daftar</button>
+    </form>
+
+    <div id="signupMessage" class="alert-message"></div>
+
+    <button class="google-btn" id="googleSignUp">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" />
+      Daftar dengan Google
+    </button>
+
+    <div class="links">
+      <p>Sudah punya akun? <a href="login.html">Login di sini</a></p>
+    </div>
+  </div>
+
+  <script>
+    const signupForm = document.getElementById('signupForm');
+    const signupMessage = document.getElementById('signupMessage');
+    const googleSignUp = document.getElementById('googleSignUp');
+
+    signupForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      signupMessage.style.display = 'none';
+
+      const firstName = document.getElementById('firstName').value.trim();
+      const lastName = document.getElementById('lastName').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      const termsChecked = document.getElementById('terms').checked;
+
+      if (!email.includes('@') || !email.includes('.')) {
+        signupMessage.textContent = "Format email tidak valid.";
+        signupMessage.style.display = 'block';
+        return;
+      }
+
+      if (password.length < 6) {
+        signupMessage.textContent = "Password minimal 6 karakter.";
+        signupMessage.style.display = 'block';
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        signupMessage.textContent = "Password dan konfirmasi tidak cocok.";
+        signupMessage.style.display = 'block';
+        return;
+      }
+
+      if (!termsChecked) {
+        signupMessage.textContent = "Anda harus menyetujui syarat & ketentuan.";
+        signupMessage.style.display = 'block';
+        return;
+      }
+
+      auth.createUserWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          return userCredential.user.updateProfile({
+            displayName: `${firstName} ${lastName}`
+          });
+        })
+        .then(() => {
+          window.location.href = 'home.html';
+        })
+        .catch((error) => {
+          signupMessage.textContent = error.message;
+          signupMessage.style.display = 'block';
+        });
+    });
+
+    googleSignUp.addEventListener('click', () => {
+      auth.signInWithPopup(provider)
+        .then((result) => {
+          const user = result.user;
+          return user.updateProfile({
+            displayName: `${user.displayName}`
+          });
+        })
+        .then(() => {
+          window.location.href = 'home.html';
+        })
+        .catch((error) => {
+          signupMessage.textContent = 'Gagal daftar dengan Google: ' + error.message;
+          signupMessage.style.display = 'block';
+        });
+    });
+  </script>
+
+</body>
+</html>
