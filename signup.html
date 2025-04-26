@@ -5,11 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Sign Up | Brand</title>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+  <!-- Firebase SDK v8 -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
   <style>
+    /* (style kamu tetap sama, aku tidak ubah) */
     body {
       font-family: 'Segoe UI', sans-serif;
       background-color: #f4f4f4;
@@ -145,26 +146,23 @@
 
   <script>
     // Firebase configuration
-    const firebaseConfig = {
+    var firebaseConfig = {
       apiKey: "AIzaSyD_Et5wLL9Zk24Ewc-43mTG4DP-PblvPGY",
       authDomain: "linkinaja-23a4b.firebaseapp.com",
       projectId: "linkinaja-23a4b",
-      storageBucket: "linkinaja-23a4b.firebasestorage.app",
+      storageBucket: "linkinaja-23a4b.appspot.com",
       messagingSenderId: "575411635239",
       appId: "1:575411635239:web:c8ff9067b78d57f92d7a02",
       measurementId: "G-F6LRLD1EYE"
     };
-
     // Initialize Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const provider = new firebase.auth.GoogleAuthProvider();
+    firebase.initializeApp(firebaseConfig);
   </script>
 </head>
 <body>
 
   <div class="signup-container">
-    <img src="https://i.ibb.co.com/twGmdmzY/Linkin-Aja-20250425-165144-0000.png/80" alt="Logo" class="logo" />
+    <img src="https://i.ibb.co/twGmdmz/Linkin-Aja-20250425-165144-0000.png" alt="Logo" class="logo" />
     <div class="brand-name">LinkinAja</div>
     <div class="slogan">Link pilihan dari toko terpercaya</div>
 
@@ -207,20 +205,23 @@
   </div>
 
   <script>
+    var auth = firebase.auth();
+    var provider = new firebase.auth.GoogleAuthProvider();
+
     const signupForm = document.getElementById('signupForm');
     const signupMessage = document.getElementById('signupMessage');
     const googleSignUp = document.getElementById('googleSignUp');
 
-    signupForm.addEventListener('submit', (e) => {
+    signupForm.addEventListener('submit', function(e) {
       e.preventDefault();
       signupMessage.style.display = 'none';
 
-      const firstName = document.getElementById('firstName').value.trim();
-      const lastName = document.getElementById('lastName').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
-      const confirmPassword = document.getElementById('confirmPassword').value;
-      const termsChecked = document.getElementById('terms').checked;
+      var firstName = document.getElementById('firstName').value.trim();
+      var lastName = document.getElementById('lastName').value.trim();
+      var email = document.getElementById('email').value.trim();
+      var password = document.getElementById('password').value;
+      var confirmPassword = document.getElementById('confirmPassword').value;
+      var termsChecked = document.getElementById('terms').checked;
 
       if (!email.includes('@') || !email.includes('.')) {
         signupMessage.textContent = "Format email tidak valid.";
@@ -247,32 +248,32 @@
       }
 
       auth.createUserWithEmailAndPassword(email, password)
-        .then((userCredential) => {
+        .then(function(userCredential) {
           return userCredential.user.updateProfile({
-            displayName: `${firstName} ${lastName}`
+            displayName: firstName + " " + lastName
           });
         })
-        .then(() => {
+        .then(function() {
           window.location.href = 'home.html';
         })
-        .catch((error) => {
+        .catch(function(error) {
           signupMessage.textContent = error.message;
           signupMessage.style.display = 'block';
         });
     });
 
-    googleSignUp.addEventListener('click', () => {
+    googleSignUp.addEventListener('click', function() {
       auth.signInWithPopup(provider)
-        .then((result) => {
-          const user = result.user;
+        .then(function(result) {
+          var user = result.user;
           return user.updateProfile({
-            displayName: `${user.displayName}`
+            displayName: user.displayName
           });
         })
-        .then(() => {
+        .then(function() {
           window.location.href = 'home.html';
         })
-        .catch((error) => {
+        .catch(function(error) {
           signupMessage.textContent = 'Gagal daftar dengan Google: ' + error.message;
           signupMessage.style.display = 'block';
         });
