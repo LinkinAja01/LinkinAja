@@ -1,12 +1,10 @@
-<!DOCTYPE html>
-<html lang="id">
+<!DOCTYPE html><html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LinkinAja | Produk</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
-    /* --- CSS (sama seperti sebelumnya) --- */
     body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f4f4f4; }
     header, footer { background-color: #0fb310; color: white; padding: 15px; text-align: center; }
     nav { margin-top: 10px; }
@@ -14,17 +12,43 @@
     .hero { background-color: #e8f5e9; padding: 30px; text-align: center; }
     .filters { padding: 15px; display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
     .filters select, .filters input { padding: 8px; font-size: 14px; border-radius: 4px; border: 1px solid #ccc; }
-    .products { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; padding: 20px; }
-    .product-card { background-color: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 15px; text-align: center; }
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+    .product-card {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 15px;
+      text-align: center;
+      transition: transform 0.3s;
+    }
+    .product-card:hover { transform: translateY(-5px); }
     .product-card img { width: 100%; height: 150px; object-fit: contain; margin-bottom: 10px; }
     .product-card .rating { color: gold; }
-    .product-card button { background-color: #4CAF50; color: white; border: none; padding: 10px; margin-top: 10px; width: 100%; cursor: pointer; border-radius: 5px; }
+    .product-card button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px;
+      margin-top: 10px;
+      width: 100%;
+      cursor: pointer;
+      border-radius: 5px;
+    }
     footer { margin-top: 30px; }
     .banner-img { width: 100%; height: auto; margin-top: 20px; }
     .logo-img { width: 100px; height: auto; margin-bottom: 10px; }
-  </style>
-
-  <script type="module">
+    @media (max-width: 600px) {
+      .products { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 400px) {
+      .products { grid-template-columns: 1fr; }
+    }
+  </style>  <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
     import { getFirestore, collection, getDocs, query, orderBy, limit, startAfter, where } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
@@ -117,7 +141,7 @@
         snapshot.forEach((doc) => {
           const p = doc.data();
           if (searchKeyword && !p.nama.toLowerCase().includes(searchKeyword)) {
-            return; // skip jika tidak cocok search
+            return;
           }
 
           const div = document.createElement('div');
@@ -143,10 +167,7 @@
         loadProducts();
       }
     }
-  </script>
-</head>
-
-<body>
+  </script></head><body>
   <header>
     <img src="https://i.ibb.co.com/XfVXQmfm/1-20250423-195927-0000.png" alt="Logo LinkinAja" class="logo-img" />
     <h1>LinkinAja</h1>
@@ -154,19 +175,13 @@
     <nav>
       <a href="home.html">Home</a>
       <a href="tentang.html">Tentang Kami</a>
-      <a href="hubungi.html">Kontak</a>
+      <a href="kontak.html">Kontak</a>
       <a href="pengaturan.html">Pengaturan</a>
     </nav>
-  </header>
-
-  <img src="https://i.ibb.co.com/XrkWmRgn/Hijau-Banner-Iklan-Kiriman-Instagram-1636-x-736-piksel-20250426-012637-0000.png" alt="Banner Iklan" class="banner-img" />
-
-  <section class="hero">
+  </header>  <img src="https://i.ibb.co.com/XrkWmRgn/Hijau-Banner-Iklan-Kiriman-Instagram-1636-x-736-piksel-20250426-012637-0000.png" alt="Banner Iklan" class="banner-img" />  <section class="hero">
     <h2>Selamat datang di LinkinAja!</h2>
     <p>Temukan produk terbaik dari berbagai toko online terpercaya.</p>
-  </section>
-
-  <section class="filters">
+  </section>  <section class="filters">
     <select id="filterToko">
       <option value="">Semua Toko</option>
       <option value="Shopee">Shopee</option>
@@ -190,18 +205,10 @@
       <option value="Peralatan Rumah Tangga">Peralatan Rumah Tangga</option>
     </select>
     <input type="text" id="searchInput" placeholder="Cari produk...">
-  </section>
-
-  <section class="products" id="productGrid"></section>
-
-  <div id="spinner" style="text-align:center; display:none; margin:20px;">
+  </section>  <section class="products" id="productGrid"></section>  <div id="spinner" style="text-align:center; display:none; margin:20px;">
     <i class="fas fa-spinner fa-spin fa-2x" style="color: #4CAF50;"></i>
-  </div>
-
-  <img src="https://i.ibb.co.com/23rMtHvj/Putih-Biru-Modern-Geometris-Iklan-Promosi-Perusahaan-Spanduk-Horizontal-20250426-015529-0000.png" alt="Banner Iklan 2" class="banner-img" />
-
-  <footer>
-    <p>&copy; ©2025 LinkinAja. Hak cipta dilindungi.</p>
+  </div>  <img src="https://i.ibb.co.com/23rMtHvj/Putih-Biru-Modern-Geometris-Iklan-Promosi-Perusahaan-Spanduk-Horizontal-20250426-015529-0000.png" alt="Banner Iklan 2" class="banner-img" />  <footer>
+    <p>&copy; 2025 LinkinAja. Hak cipta dilindungi.</p>
   </footer>
 </body>
 </html>
