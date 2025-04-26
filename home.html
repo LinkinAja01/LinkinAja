@@ -5,16 +5,52 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LinkinAja | Produk</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
   <style>
     body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f4f4f4; }
     header, footer { background-color: #0fb310; color: white; padding: 10px; text-align: center; }
-    header img { height: 50px; vertical-align: middle; }
-    .logo-text { display: inline-block; text-align: left; margin-left: 10px; vertical-align: middle; }
-    .logo-text h1 { margin: 0; font-size: 20px; }
-    .logo-text p { margin: 0; font-size: 12px; }
+    header img { height: 50px; }
     nav { margin-top: 5px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
     nav a { color: white; text-decoration: none; font-size: 14px; }
     .hero { background: #e8f5e9; padding: 20px; text-align: center; }
+
+    .filters {
+      padding: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .search-container {
+      position: relative;
+      width: 300px;
+    }
+
+    .search-container i {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #aaa;
+    }
+
+    .search-container input {
+      width: 100%;
+      padding: 10px 10px 10px 35px;
+      border-radius: 25px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .search-container input:focus {
+      border-color: #0fb310;
+      box-shadow: 0 0 5px #0fb310;
+      transform: scale(1.03);
+    }
+
     .products { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; padding: 10px; }
     .product-card { background: white; border-radius: 8px; box-shadow: 0 1px 5px rgba(0,0,0,0.1); padding: 10px; text-align: center; }
     .product-card img { width: 100%; height: 100px; object-fit: contain; margin-bottom: 5px; }
@@ -50,6 +86,9 @@
     let lastVisible = null;
     let loading = false;
     const pageSize = 10;
+
+    let filterToko = "";
+    let filterKategori = "";
     let searchKeyword = "";
 
     const userCheck = () => {
@@ -60,16 +99,46 @@
 
     window.addEventListener('DOMContentLoaded', async () => {
       userCheck();
-      setupSearchListener();
+      await populateFilters();
+      setupFilterListeners();
       loadProducts();
       window.addEventListener('scroll', handleScroll);
     });
 
-    function setupSearchListener() {
+    async function populateFilters() {
+      const snapshot = await getDocs(collection(db, "produk"));
+      const tokoSet = new Set();
+      const kategoriSet = new Set();
+
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        if (data.toko) tokoSet.add(data.toko);
+        if (data.kategori) kategoriSet.add(data.kategori);
+      });
+
+      const tokoSelect = document.getElementById('filterToko');
+      const kategoriSelect = document.getElementById('filterKategori');
+
+      tokoSelect.innerHTML = '<option value="">Semua Toko</option>';
+      kategoriSelect.innerHTML = '<option value="">Semua Kategori</option>';
+
+      tokoSet.forEach(toko => {
+        tokoSelect.innerHTML += `<option value="${toko}">${toko}</option>`;
+      });
+      kategoriSet.forEach(kat => {
+        kategoriSelect.innerHTML += `<option value="${kat}">${kat}</option>`;
+      });
+    }
+
+    function setupFilterListeners() {
+      document.getElementById('filterToko').addEventListener('change', resetAndLoad);
+      document.getElementById('filterKategori').addEventListener('change', resetAndLoad);
       document.getElementById('searchInput').addEventListener('input', debounce(resetAndLoad, 500));
     }
 
     function resetAndLoad() {
+      filterToko = document.getElementById('filterToko').value;
+      filterKategori = document.getElementById('filterKategori').value;
       searchKeyword = document.getElementById('searchInput').value.trim().toLowerCase();
       document.getElementById('productGrid').innerHTML = '';
       lastVisible = null;
@@ -93,9 +162,14 @@
       spinner.style.display = "block";
 
       let q = collection(db, "produk");
-      let baseQuery = query(q, orderBy("nama"), limit(pageSize));
+      let constraints = [];
+
+      if (filterToko) constraints.push(where("toko", "==", filterToko));
+      if (filterKategori) constraints.push(where("kategori", "==", filterKategori));
+
+      let baseQuery = query(q, ...constraints, orderBy("nama"), limit(pageSize));
       if (lastVisible) {
-        baseQuery = query(q, orderBy("nama"), startAfter(lastVisible), limit(pageSize));
+        baseQuery = query(q, ...constraints, orderBy("nama"), startAfter(lastVisible), limit(pageSize));
       }
 
       const snapshot = await getDocs(baseQuery);
@@ -133,13 +207,7 @@
 
 <body>
   <header>
-    <div>
-      <img src="https://i.ibb.co.com/XfVXQmfm/1-20250423-195927-0000.png" alt="Logo LinkinAja" />
-      <div class="logo-text">
-        <h1>LinkinAja</h1>
-        <p>Toko Terpercaya</p>
-      </div>
-    </div>
+    <img src="https://i.ibb.co.com/XfVXQmfm/1-20250423-195927-0000.png" alt="Logo LinkinAja" />
     <nav>
       <a href="home.html">Home</a>
       <a href="tentang.html">Tentang</a>
@@ -156,7 +224,10 @@
   </section>
 
   <section class="filters">
-    <input type="text" id="searchInput" placeholder="Cari produk...">
+    <div class="search-container">
+      <i class="fas fa-search"></i>
+      <input type="text" id="searchInput" placeholder="Cari produk...">
+    </div>
   </section>
 
   <section class="products" id="productGrid"></section>
